@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification des Couvertures - Renommées</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-wrap: wrap; gap: 10px; padding: 20px; background-color: #f0f0f0; }
+        .card { border: 1px solid #ccc; padding: 10px; width: 150px; text-align: center; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        img { max-width: 100%; height: auto; border-radius: 4px; }
+        .name { font-size: 0.8em; margin-top: 5px; word-break: break-all; color: #555; }
+    </style>
+</head>
+<body>
+    <script>
+        const images = [
+            "brulee-vive.jpg",
+            "celle-dont-jai-toujours-reve.jpg",
+            "celle-que-je-suis.jpg",
+            "compartiment-pour-dames.jpg",
+            "femmes-dalger-dans-leur-appartement.jpg",
+            "jamais-sans-ma-fille.jpg",
+            "je-serai-vivante-2.jpg",
+            "juke-vox.jpg",
+            "la-ou-tombent-les-anges-2.jpg",
+            "la-ou-tombent-les-anges.jpg",
+            "la-vie-vue-den-bas.jpg",
+            "le deuxième sexe.jpg",
+            "le harem du roi.jpg",
+            "le-bal-des-folles.jpg",
+            "le-jour-ou-je-suis-partie.jpg",
+            "lempire-des-femmes.jpg",
+            "les-impatientes.jpg",
+            "masculin-feminin-pluriel.jpg",
+            "mille-soleils-splendides.jpg",
+            "missouri-1627.jpg",
+            "moi-malala.jpg",
+            "nos-corps-juges-2.jpg",
+            "nos-corps-juges.jpg",
+            "nous-sommes-tous-des-feministes.jpg",
+            "plaidoirie-pour-lavortement.jpg",
+            "que-sur-toi-se-lamente-le-tigre.jpg",
+            "sauver-mina-2.jpg",
+            "sauver-mina.jpg",
+            "the-downstairs-girl.jpg",
+            "une-maison-de-poupee.jpg",
+            "une-si-longue-lettre-2.jpg",
+            "une-si-longue-lettre.jpg"
+        ];
+
+        images.forEach(img => {
+            document.write(`
+                <div class="card">
+                    <img src="Nouveau dossier/${img}" alt="${img}">
+                    <div class="name">${img}</div>
+                </div>
+            `);
+        });
+    </script>
+</body>
+</html>
