@@ -2,6 +2,7 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Quiz from './pages/Quiz'
 import Catalog from './pages/Catalog'
+import BookDetails from './pages/BookDetails'
 import AppLayout from './components/layout/AppLayout'
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="quiz" element={<Quiz />} />
           <Route path="catalog" element={<Catalog />} />
+          <Route path="catalog/:id" element={<BookDetails />} />
           
           {/* Rotas Futuras - Serão acedidas no mesmo layout */}
           {/* <Route path="education/read" element={<EducationRead />} /> */}

@@ -66,7 +66,7 @@ export default function BookCard({ book }: { book: CatalogBook }) {
 
         {/* Actions */}
         <div className="mt-5 pt-4 border-t border-notebook-lines flex gap-2">
-          <Link to="#" className="flex-1 bg-notebook-beige hover:bg-blue-50 text-blue-900 border border-notebook-lines font-bold text-xs uppercase tracking-widest py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
+          <Link to={`/catalog/${book.id}`} className="flex-1 bg-notebook-beige hover:bg-blue-50 text-blue-900 border border-notebook-lines font-bold text-xs uppercase tracking-widest py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
             <Info className="w-4 h-4" /> Détails
           </Link>
           {book.type === 'PDF' && (

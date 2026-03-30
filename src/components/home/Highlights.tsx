@@ -63,7 +63,7 @@ export default function Highlights() {
               {book.desc}
             </p>
 
-            <Link to="/catalog" className="w-full py-4 bg-notebook-beige border-2 border-notebook-lines text-blue-900 rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-blue-900 hover:text-white hover:border-blue-900 transition-all flex items-center justify-center gap-2 group/btn">
+            <Link to={`/catalog/${book.id}`} className="w-full py-4 bg-notebook-beige border-2 border-notebook-lines text-blue-900 rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-blue-900 hover:text-white hover:border-blue-900 transition-all flex items-center justify-center gap-2 group/btn">
               <Book className="w-4 h-4 group-hover/btn:-rotate-12 transition-transform" />
               Découvrir
             </Link>
