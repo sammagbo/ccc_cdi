@@ -1,11 +1,11 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter as Router, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Quiz from './pages/Quiz'
 import AppLayout from './components/layout/AppLayout'
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       {/* Texturas e decorações de fundo fixas (z-índice negativo ou no fundo real da página) */}
       <div className="fixed inset-0 notebook-texture z-0 pointer-events-none"></div>
       <div className="fixed top-[-10rem] right-[-10rem] w-[30rem] h-[30rem] bg-indigo-100 rounded-full blur-[80px] opacity-40 animate-pulse pointer-events-none"></div>
@@ -24,7 +24,7 @@ function App() {
           {/* <Route path="librarian" element={<Librarian />} /> */}
         </Route>
       </Routes>
-    </BrowserRouter>
+    </Router>
   )
 }
 
