@@ -3,6 +3,7 @@ import Home from './pages/Home'
 import Quiz from './pages/Quiz'
 import Catalog from './pages/Catalog'
 import BookDetails from './pages/BookDetails'
+import EducationRead from './pages/EducationRead'
 import AppLayout from './components/layout/AppLayout'
 
 function App() {
@@ -22,8 +23,8 @@ function App() {
           <Route path="catalog" element={<Catalog />} />
           <Route path="catalog/:id" element={<BookDetails />} />
           
-          {/* Rotas Futuras - Serão acedidas no mesmo layout */}
-          {/* <Route path="education/read" element={<EducationRead />} /> */}
+          {/* Rotas Educacionais */}
+          <Route path="education/read" element={<EducationRead />} />
           {/* <Route path="librarian" element={<Librarian />} /> */}
         </Route>
       </Routes>
