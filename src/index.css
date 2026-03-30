@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply min-h-screen bg-[#fdfaf3] text-[#334155] font-sans antialiased selection:bg-blue-200 selection:text-blue-900;
+  }
+}
+
+@layer components {
+  .notebook-page {
+    background-color: white;
+    background-image: linear-gradient(theme('colors.notebook.lines') 1px, transparent 1px);
+    background-size: 100% 2.5rem;
+    position: relative;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+  }
+
+  .notebook-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    width: 1px;
+    height: 100%;
+    background-color: theme('colors.notebook.red');
+    opacity: 0.5;
+  }
+
+  .handwritten {
+    @apply font-hand -rotate-2 inline-block;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .shadow-thick {
+    box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.1);
+  }
+
+  .notebook-texture {
+    background-image: url("https://www.transparenttextures.com/patterns/pinstriped-suit.png");
+    opacity: 0.03;
+    pointer-events: none;
+  }
+}
