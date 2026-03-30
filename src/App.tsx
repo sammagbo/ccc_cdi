@@ -1,6 +1,7 @@
 import { HashRouter as Router, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Quiz from './pages/Quiz'
+import Catalog from './pages/Catalog'
 import AppLayout from './components/layout/AppLayout'
 
 function App() {
@@ -17,9 +18,9 @@ function App() {
           {/* Outlet: Componentes dinâmicos renderizados na <main> */}
           <Route index element={<Home />} />
           <Route path="quiz" element={<Quiz />} />
+          <Route path="catalog" element={<Catalog />} />
           
           {/* Rotas Futuras - Serão acedidas no mesmo layout */}
-          {/* <Route path="catalog" element={<Catalog />} /> */}
           {/* <Route path="education/read" element={<EducationRead />} /> */}
           {/* <Route path="librarian" element={<Librarian />} /> */}
         </Route>
