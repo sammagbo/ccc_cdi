@@ -4,6 +4,7 @@ import Quiz from './pages/Quiz'
 import Catalog from './pages/Catalog'
 import BookDetails from './pages/BookDetails'
 import EducationRead from './pages/EducationRead'
+import EducationInform from './pages/EducationInform'
 import AppLayout from './components/layout/AppLayout'
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           
           {/* Rotas Educacionais */}
           <Route path="education/read" element={<EducationRead />} />
+          <Route path="education/inform" element={<EducationInform />} />
           {/* <Route path="librarian" element={<Librarian />} /> */}
         </Route>
       </Routes>
