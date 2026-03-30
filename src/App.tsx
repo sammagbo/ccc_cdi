@@ -5,6 +5,7 @@ import Catalog from './pages/Catalog'
 import BookDetails from './pages/BookDetails'
 import EducationRead from './pages/EducationRead'
 import EducationInform from './pages/EducationInform'
+import Jouer from './pages/Jouer'
 import AppLayout from './components/layout/AppLayout'
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route path="quiz" element={<Quiz />} />
           <Route path="catalog" element={<Catalog />} />
           <Route path="catalog/:id" element={<BookDetails />} />
+          <Route path="jouer" element={<Jouer />} />
           
           {/* Rotas Educacionais */}
           <Route path="education/read" element={<EducationRead />} />
