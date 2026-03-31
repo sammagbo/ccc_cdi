@@ -11,6 +11,8 @@ import Librarian from './pages/Librarian'
 import Contact from './pages/Contact'
 import AdminLayout from './components/admin/AdminLayout'
 import CatalogManager from './pages/admin/CatalogManager'
+import Login from './pages/Login'
+import ProtectedRoute from './components/layout/ProtectedRoute'
 
 function App() {
   return (
@@ -35,15 +37,17 @@ function App() {
           <Route path="education/inform" element={<EducationInform />} />
           <Route path="librarian" element={<Librarian />} />
           <Route path="contact" element={<Contact />} />
+          <Route path="login" element={<Login />} />
         </Route>
 
-        {/* Roteamento de Admin (Isolado) */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Navigate to="catalog" replace />} />
-          <Route path="catalog" element={<CatalogManager />} />
-          {/* Placeholders for future modules */}
-          <Route path="media" element={<div className="p-12"><h2 className="text-2xl font-bold">Gestão Multimédia em breve...</h2></div>} />
-          <Route path="quizzes" element={<div className="p-12"><h2 className="text-2xl font-bold">Gestão de Quizzes em breve...</h2></div>} />
+        {/* Roteamento de Admin (Protegido / Isolado) */}
+        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="catalog" replace />} />
+            <Route path="catalog" element={<CatalogManager />} />
+            <Route path="media" element={<div className="p-12"><h2 className="text-2xl font-bold">Gestão Multimédia em breve...</h2></div>} />
+            <Route path="quizzes" element={<div className="p-12"><h2 className="text-2xl font-bold">Gestão de Quizzes em breve...</h2></div>} />
+          </Route>
         </Route>
       </Routes>
     </Router>

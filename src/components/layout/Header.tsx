@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { Library, Menu, X, Search, ChevronDown, GraduationCap, ArrowRight } from 'lucide-react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Library, Menu, X, Search, ChevronDown, GraduationCap, ArrowRight, User, LogOut, Shield } from 'lucide-react'
 import { useAppStore } from '@/store/useAppStore'
 import { cn } from '@/lib/utils'
 
@@ -9,8 +9,14 @@ export default function Header() {
   const [isDropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   
-  const { level, setLevel, isSearchOpen, setSearchOpen } = useAppStore()
+  const { level, setLevel, isSearchOpen, setSearchOpen, user, logout } = useAppStore()
   const location = useLocation()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
 
   // Fechar menus ao mudar de rota
   useEffect(() => {
@@ -136,13 +142,43 @@ export default function Header() {
               </div>
             </button>
 
-            {/* Global Search Toggle */}
-            <button 
-              onClick={() => setSearchOpen(!isSearchOpen)}
-              className="w-10 h-10 rounded-full flex items-center justify-center text-notebook-pencil hover:bg-blue-50 hover:text-blue-900 transition-colors"
-            >
-              <Search className="w-5 h-5" />
-            </button>
+            {/* Auth Actions */}
+            <div className="hidden lg:block border-l border-notebook-lines pl-6 h-8 flex items-center">
+              {user ? (
+                <div className="flex items-center gap-4">
+                  {user.role === 'admin' && (
+                    <Link 
+                      to="/admin" 
+                      className="text-[10px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100 hover:bg-emerald-100 transition-colors flex items-center gap-2"
+                    >
+                      <Shield className="w-3 h-3" />
+                      Admin
+                    </Link>
+                  )}
+                  <div className="flex items-center gap-3">
+                    <div className="flex flex-col items-end">
+                      <span className="text-xs font-bold text-blue-950 leading-none">{user.name}</span>
+                      <span className="text-[10px] font-medium text-notebook-pencil/50 capitalize">{user.role}</span>
+                    </div>
+                    <button 
+                      onClick={handleLogout}
+                      className="w-9 h-9 rounded-full bg-notebook-beige border border-notebook-lines flex items-center justify-center text-notebook-pencil hover:text-rose-500 hover:bg-rose-50 transition-colors"
+                      title="Sair"
+                    >
+                      <LogOut className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <Link 
+                  to="/login"
+                  className="px-5 py-2 rounded-xl bg-blue-900 border border-blue-950 text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-sm flex items-center gap-2"
+                >
+                  <User className="w-3.5 h-3.5" />
+                  Connexion
+                </Link>
+              )}
+            </div>
 
             {/* Mobile Menu Toggle */}
             <button 
@@ -218,6 +254,43 @@ export default function Header() {
                   - {link.name}
                 </Link>
              ))}
+          </div>
+
+          <div className="mt-auto border-t border-notebook-lines pt-8 pb-12 flex flex-col gap-4">
+            {user ? (
+              <>
+                <div className="flex items-center gap-4 p-4 rounded-2xl bg-blue-50/50 border border-blue-100">
+                  <div className="w-12 h-12 rounded-xl bg-blue-900 flex items-center justify-center text-white shadow-sm font-serif text-xl italic font-bold">
+                    {user.name.charAt(0)}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-lg font-bold text-blue-950 font-serif leading-none mb-1">{user.name}</span>
+                    <span className="text-xs font-black uppercase tracking-widest text-notebook-pencil/40">{user.role}</span>
+                  </div>
+                </div>
+                {user.role === 'admin' && (
+                  <Link 
+                    to="/admin" 
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-emerald-100 bg-emerald-50 text-emerald-800 font-bold text-sm tracking-widest uppercase transition-all"
+                  >
+                    <Shield className="w-4 h-4" /> Painel de Gestão
+                  </Link>
+                )}
+                <button 
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-rose-100 bg-rose-50 text-rose-800 font-bold text-sm tracking-widest uppercase transition-all"
+                >
+                  <LogOut className="w-4 h-4" /> Terminar Sessão
+                </button>
+              </>
+            ) : (
+              <Link 
+                to="/login"
+                className="flex items-center justify-center gap-3 px-4 py-5 rounded-xl bg-blue-900 border-2 border-blue-950 text-white font-black text-sm tracking-[0.2em] uppercase transition-all shadow-md"
+              >
+                <User className="w-5 h-5" /> Iniciar Sessão
+              </Link>
+            )}
           </div>
         </nav>
       </div>
