@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import { CatalogBook, catalogData } from '../services/catalogData'
+import { CatalogBook } from '../services/catalogData'
+import { bookService } from '../services/bookService'
 
 export type UserRole = 'user' | 'admin'
 
@@ -21,11 +22,14 @@ interface AppState {
   login: (email: string, password: string) => Promise<boolean>
   logout: () => void
 
-  // Catalog State
+  // Catalog State & Async handling
   books: CatalogBook[]
-  addBook: (book: CatalogBook) => void
-  updateBook: (id: string, updatedBook: Partial<CatalogBook>) => void
-  deleteBook: (id: string) => void
+  isLoading: boolean
+  error: string | null
+  fetchBooks: () => Promise<void>
+  addBook: (book: CatalogBook) => Promise<void>
+  updateBook: (id: string, updatedBook: Partial<CatalogBook>) => Promise<void>
+  deleteBook: (id: string) => Promise<void>
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -35,10 +39,8 @@ export const useAppStore = create<AppState>((set) => ({
   setSearchOpen: (isOpen) => set({ isSearchOpen: isOpen }),
   
   // Auth Initial State
-  user: null, // by default not logged in
+  user: null, 
   login: async (email, password) => {
-    // Mock Authentication Logic
-    // In a real app, this would be an API call
     return new Promise((resolve) => {
       setTimeout(() => {
         if (email === 'admin@lyceemoliere.com' && password === 'admin123') {
@@ -62,22 +64,58 @@ export const useAppStore = create<AppState>((set) => ({
           })
           resolve(true)
         } else {
-          resolve(false) // invalid credentials
+          resolve(false)
         }
-      }, 600) // fake delay for better UX
+      }, 600)
     })
   },
-  logout: () => {
-    set({ user: null })
+  logout: () => set({ user: null }),
+
+  // Catalog State
+  books: [],
+  isLoading: false,
+  error: null,
+
+  fetchBooks: async () => {
+    set({ isLoading: true, error: null })
+    try {
+      const books = await bookService.getBooks()
+      set({ books, isLoading: false })
+    } catch (err) {
+      set({ error: 'Erro ao carregar o catálogo. Tente novamente.', isLoading: false })
+    }
   },
 
-  // Books State Initialized from Mock Data
-  books: [...catalogData],
-  addBook: (book) => set((state) => ({ books: [book, ...state.books] })),
-  updateBook: (id, updatedBook) => set((state) => ({
-    books: state.books.map(b => b.id === id ? { ...b, ...updatedBook } : b)
-  })),
-  deleteBook: (id) => set((state) => ({
-    books: state.books.filter(b => b.id !== id)
-  }))
+  addBook: async (book) => {
+    set({ isLoading: true, error: null })
+    try {
+      await bookService.addBook(book)
+      const books = await bookService.getBooks()
+      set({ books, isLoading: false })
+    } catch (err) {
+      set({ error: 'Erro ao adicionar o livro.', isLoading: false })
+    }
+  },
+
+  updateBook: async (id, updatedBook) => {
+    set({ isLoading: true, error: null })
+    try {
+      await bookService.updateBook(id, updatedBook)
+      const books = await bookService.getBooks()
+      set({ books, isLoading: false })
+    } catch (err) {
+      set({ error: 'Erro ao atualizar o livro.', isLoading: false })
+    }
+  },
+
+  deleteBook: async (id) => {
+    set({ isLoading: true, error: null })
+    try {
+      await bookService.deleteBook(id)
+      const books = await bookService.getBooks()
+      set({ books, isLoading: false })
+    } catch (err) {
+      set({ error: 'Erro ao eliminar o livro.', isLoading: false })
+    }
+  }
 }))

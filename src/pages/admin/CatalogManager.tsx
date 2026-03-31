@@ -1,18 +1,22 @@
-import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Plus, RefreshCw } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { CatalogBook, categories } from '../../services/catalogData'
 import { DataTable, ColumnDef } from '../../components/admin/DataTable'
 import { ItemFormModal, FormField } from '../../components/admin/ItemFormModal'
+import LoadingSpinner from '../../components/ui/LoadingSpinner'
+import ErrorMessage from '../../components/ui/ErrorMessage'
 
 export default function CatalogManager() {
-  const books = useAppStore(state => state.books)
-  const addBook = useAppStore(state => state.addBook)
-  const updateBook = useAppStore(state => state.updateBook)
-  const deleteBook = useAppStore(state => state.deleteBook)
+  const { books, isLoading, error, fetchBooks, addBook, updateBook, deleteBook } = useAppStore()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingBook, setEditingBook] = useState<CatalogBook | null>(null)
+
+  // Carregar dados no mount
+  useEffect(() => {
+    fetchBooks()
+  }, [])
 
   // Definir Estrutura da Tabela (Columns)
   const columns: ColumnDef<CatalogBook>[] = [
@@ -101,30 +105,33 @@ export default function CatalogManager() {
     setIsModalOpen(true)
   }
 
-  const handleDelete = (book: CatalogBook) => {
+  const handleDelete = async (book: CatalogBook) => {
     if (window.confirm(`Tens a certeza que queres eliminar "${book.title}"?`)) {
-      deleteBook(book.id)
+      await deleteBook(book.id)
     }
   }
 
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = async (data: any) => {
     if (editingBook) {
-      // Update
-      updateBook(editingBook.id, data)
+      await updateBook(editingBook.id, data)
     } else {
-      // Create - Generate ID
       const newBook: CatalogBook = {
         ...data,
         id: `bk-${Date.now()}`
       }
-      addBook(newBook)
+      await addBook(newBook)
     }
     setIsModalOpen(false)
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 animate-fade-in-up pb-10">
+    <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 animate-fade-in-up pb-10 relative">
       
+      {/* Loading Overlay for Mutations */}
+      {isLoading && books.length > 0 && (
+        <LoadingSpinner fullPage message="A atualizar catálogo..." />
+      )}
+
       {/* Header Actions */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-notebook-lines relative overflow-hidden">
         {/* Decorative corner */}
@@ -136,22 +143,39 @@ export default function CatalogManager() {
             Adiciona, edita ou remove livros do acervo do CDI.
           </p>
         </div>
-        <button 
-          onClick={handleAddNew}
-          className="relative z-10 bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs tracking-widest uppercase px-6 py-3 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
-        >
-          <Plus className="w-4 h-4" /> Adicionar Livro
-        </button>
+        <div className="relative z-10 flex gap-3">
+          <button 
+            onClick={() => fetchBooks()}
+            className="p-3 bg-white border-2 border-notebook-lines text-notebook-pencil hover:text-blue-900 rounded-lg transition-colors shadow-sm"
+            title="Atualizar lista"
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          </button>
+          <button 
+            onClick={handleAddNew}
+            className="bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs tracking-widest uppercase px-6 py-3 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+          >
+            <Plus className="w-4 h-4" /> Adicionar Livro
+          </button>
+        </div>
       </div>
 
       {/* Main Table Area */}
-      <DataTable 
-        data={books}
-        columns={columns}
-        searchKey="title"
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      {isLoading && books.length === 0 ? (
+        <div className="py-20 bg-white rounded-2xl border border-notebook-lines shadow-sm flex items-center justify-center">
+            <LoadingSpinner message="A carregar inventário..." />
+        </div>
+      ) : error ? (
+        <ErrorMessage message={error} onRetry={() => fetchBooks()} />
+      ) : (
+        <DataTable 
+          data={books}
+          columns={columns}
+          searchKey="title"
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      )}
 
       {/* Modal Genérico */}
       <ItemFormModal

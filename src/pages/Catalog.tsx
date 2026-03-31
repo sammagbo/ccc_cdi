@@ -1,12 +1,19 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Filter, Search, BookDashed, ChevronDown } from 'lucide-react'
 import { categories, BookLevel } from '../services/catalogData'
 import BookCard from '../components/catalog/BookCard'
+import LoadingSpinner from '../components/ui/LoadingSpinner'
+import ErrorMessage from '../components/ui/ErrorMessage'
 import { useAppStore } from '../store/useAppStore'
 
 export default function Catalog() {
   const globalLevel = useAppStore(state => state.level)
-  const books = useAppStore(state => state.books)
+  const { books, isLoading, error, fetchBooks } = useAppStore()
+
+  // Carregar livros no mount
+  useEffect(() => {
+    fetchBooks()
+  }, [])
 
   // Estados dos Filtros
   const [searchQuery, setSearchQuery] = useState('')
@@ -138,47 +145,59 @@ export default function Catalog() {
         </aside>
 
         {/* Grelha de Resultados */}
-        <div className="flex-1 w-full">
-          {/* Status Bar */}
-          <div className="mb-6 flex items-center justify-between text-sm font-medium text-notebook-pencil/60 border-b-2 border-notebook-lines/30 pb-4">
-            <span>
-              <strong className="text-blue-900 font-black">{filteredBooks.length}</strong> livre(s) trouvé(s)
-            </span>
-            {searchQuery && (
-              <span className="hidden sm:inline-block italic bg-blue-50 px-3 py-1 rounded-full text-blue-800 border-notebook-lines border border-dashed">
-                Recherche: "{searchQuery}"
-              </span>
-            )}
-          </div>
-
-          {filteredBooks.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredBooks.map((book) => (
-                <BookCard key={book.id} book={book} />
-              ))}
+        <div className="flex-1 w-full min-h-[400px] flex flex-col">
+          {isLoading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <LoadingSpinner message="A folhear o catálogo..." />
+            </div>
+          ) : error ? (
+            <div className="flex-1 flex items-center justify-center">
+              <ErrorMessage message={error} onRetry={() => fetchBooks()} />
             </div>
           ) : (
-            /* Empty State */
-            <div className="flex flex-col items-center justify-center py-20 px-6 text-center border-2 border-notebook-lines border-dashed rounded-3xl bg-white/40">
-              <div className="w-20 h-20 bg-blue-50 border-2 border-notebook-lines rounded-full flex items-center justify-center mb-6 shadow-sm">
-                <BookDashed className="w-10 h-10 text-notebook-pencil/40 -rotate-12" />
+            <>
+              {/* Status Bar */}
+              <div className="mb-6 flex items-center justify-between text-sm font-medium text-notebook-pencil/60 border-b-2 border-notebook-lines/30 pb-4">
+                <span>
+                  <strong className="text-blue-900 font-black">{filteredBooks.length}</strong> livre(s) trouvé(s)
+                </span>
+                {searchQuery && (
+                  <span className="hidden sm:inline-block italic bg-blue-50 px-3 py-1 rounded-full text-blue-800 border-notebook-lines border border-dashed">
+                    Recherche: "{searchQuery}"
+                  </span>
+                )}
               </div>
-              <h3 className="text-2xl font-serif font-bold text-blue-900 mb-2">Aucun livre trouvé</h3>
-              <p className="text-notebook-pencil/70 max-w-sm mx-auto mb-6 font-medium">
-                Nous n'avons trouvé aucun livre correspondant à ces critères. Essaye de modifier tes filtres ou d'autres mots-clés.
-              </p>
-              <button 
-                onClick={() => {
-                  setSearchQuery('')
-                  setSelectedLevels(['college', 'lycee'])
-                  setSelectedCategory('Toutes')
-                  setOnlyAvailable(false)
-                }}
-                className="px-6 py-3 bg-blue-900 text-white font-bold text-xs tracking-widest uppercase rounded-xl hover:bg-black transition-colors"
-              >
-                Réinitialiser les filtres
-              </button>
-            </div>
+
+              {filteredBooks.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredBooks.map((book) => (
+                    <BookCard key={book.id} book={book} />
+                  ))}
+                </div>
+              ) : (
+                /* Empty State */
+                <div className="flex flex-col items-center justify-center py-20 px-6 text-center border-2 border-notebook-lines border-dashed rounded-3xl bg-white/40">
+                  <div className="w-20 h-20 bg-blue-50 border-2 border-notebook-lines rounded-full flex items-center justify-center mb-6 shadow-sm">
+                    <BookDashed className="w-10 h-10 text-notebook-pencil/40 -rotate-12" />
+                  </div>
+                  <h3 className="text-2xl font-serif font-bold text-blue-900 mb-2">Aucun livre trouvé</h3>
+                  <p className="text-notebook-pencil/70 max-w-sm mx-auto mb-6 font-medium">
+                    Nous n'avons trouvé aucun livre correspondant à ces critères. Essaye de modifier tes filtres ou d'autres mots-clés.
+                  </p>
+                  <button 
+                    onClick={() => {
+                      setSearchQuery('')
+                      setSelectedLevels(['college', 'lycee'])
+                      setSelectedCategory('Toutes')
+                      setOnlyAvailable(false)
+                    }}
+                    className="px-6 py-3 bg-blue-900 text-white font-bold text-xs tracking-widest uppercase rounded-xl hover:bg-black transition-colors"
+                  >
+                    Réinitialiser les filtres
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
 
