@@ -163,6 +163,20 @@ export default function Header() {
               </div>
             </button>
 
+            {/* Global Search Toggle */}
+            <button 
+              onClick={() => setSearchOpen(!isSearchOpen)}
+              className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-sm border",
+                isSearchOpen 
+                  ? "bg-blue-900 text-white border-blue-950 rotate-90" 
+                  : "bg-white text-blue-900 border-notebook-lines hover:bg-blue-50"
+              )}
+              title="Rechercher"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+
             {/* Auth Actions */}
             <div className="hidden lg:flex border-l border-notebook-lines pl-6 h-10 items-center">
               {user ? (
