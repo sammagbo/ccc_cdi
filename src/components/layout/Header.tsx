@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Library, Menu, X, Search, ChevronDown, GraduationCap, ArrowRight, User, LogOut, Shield, Bookmark } from 'lucide-react'
+import { Library, Menu, X, Search, ChevronDown, GraduationCap, ArrowRight, User, LogOut, Shield, Bookmark, Loader2, Book, FileText, PlayCircle, Zap } from 'lucide-react'
 import { useAppStore } from '@/store/useAppStore'
+import { useOmnisearch } from '@/hooks/useOmnisearch'
 import { cn } from '@/lib/utils'
+import { SearchResultType } from '@/services/searchService'
 
 export default function Header() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -10,8 +12,27 @@ export default function Header() {
   const dropdownRef = useRef<HTMLDivElement>(null)
   
   const { level, setLevel, isSearchOpen, setSearchOpen, user, logout } = useAppStore()
+  const { query, setQuery, topResults, isSearching, totalResults } = useOmnisearch()
   const location = useLocation()
   const navigate = useNavigate()
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (query.trim()) {
+      setSearchOpen(false)
+      navigate(`/search?q=${encodeURIComponent(query)}`)
+    }
+  }
+
+  const getResultIcon = (type: SearchResultType) => {
+    switch (type) {
+      case 'Book': return <Book className="w-4 h-4 text-blue-600" />
+      case 'PDF': return <FileText className="w-4 h-4 text-emerald-600" />
+      case 'Media': return <PlayCircle className="w-4 h-4 text-rose-500" />
+      case 'Quiz': return <Zap className="w-4 h-4 text-amber-500" />
+      default: return null
+    }
+  }
 
   const handleLogout = () => {
     logout()
@@ -197,24 +218,71 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Global Search Bar Dropaway */}
         <div className={cn(
-          "absolute top-full left-0 w-full bg-white border-b border-notebook-lines overflow-hidden transition-all duration-300 ease-out",
-          isSearchOpen ? "h-24 opacity-100 border-b" : "h-0 opacity-0 border-transparent"
+          "absolute top-full left-0 w-full bg-white border-b border-notebook-lines overflow-visible transition-all duration-300 ease-out",
+          isSearchOpen ? "h-auto opacity-100 border-b" : "h-0 opacity-0 border-transparent pointer-events-none"
         )}>
-          <div className="max-w-4xl mx-auto px-6 h-full flex items-center">
-            <div className="relative w-full flex items-center">
+          <div className="max-w-4xl mx-auto px-6 py-6 flex flex-col gap-4">
+            <form onSubmit={handleSearchSubmit} className="relative w-full flex items-center">
               <Search className="absolute left-4 w-6 h-6 text-notebook-pencil/30" />
               <input 
                 type="text" 
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 placeholder={`Rechercher un livre, un auteur, une thématique...`}
-                className="w-full pl-14 pr-4 py-4 bg-transparent border-none text-xl font-serif text-blue-900 placeholder-notebook-pencil/30 focus:outline-none focus:ring-0"
+                className="w-full pl-14 pr-32 py-4 bg-transparent border-b-2 border-notebook-lines text-2xl font-serif text-blue-900 placeholder-notebook-pencil/30 focus:outline-none focus:ring-0 focus:border-blue-300 transition-colors"
                 autoFocus={isSearchOpen}
               />
-              <button onClick={() => setSearchOpen(false)} className="absolute right-4 text-xs font-bold uppercase tracking-widest text-notebook-pencil/40 hover:text-blue-900">
-                Fermer (ESC)
-              </button>
-            </div>
+              <div className="absolute right-4 flex items-center gap-4">
+                {isSearching && <Loader2 className="w-5 h-5 animate-spin text-blue-900" />}
+                <button type="button" onClick={() => setSearchOpen(false)} className="text-xs font-bold uppercase tracking-widest text-notebook-pencil/40 hover:text-blue-900">
+                  Fermer (ESC)
+                </button>
+              </div>
+            </form>
+
+            {/* Drodown de Resultados Rápidos */}
+            {query.length >= 2 && (
+              <div className="bg-notebook-beige/30 rounded-xl border border-notebook-lines overflow-hidden shadow-inner animate-fade-in">
+                {topResults.length > 0 ? (
+                  <>
+                    <div className="divide-y divide-notebook-lines/30">
+                      {topResults.map((res) => (
+                        <Link
+                          key={res.id}
+                          to={res.url}
+                          onClick={() => setSearchOpen(false)}
+                          className="flex items-center gap-4 p-4 hover:bg-white transition-colors group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm border border-notebook-lines group-hover:scale-110 transition-transform">
+                            {getResultIcon(res.type)}
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="text-sm font-bold text-blue-950 group-hover:text-blue-700">{res.title}</h4>
+                            <p className="text-[10px] uppercase font-black tracking-widest text-notebook-pencil/40">{res.subtitle}</p>
+                          </div>
+                          <div className="text-[10px] font-black uppercase text-notebook-pencil/20 tracking-widest group-hover:text-blue-900/40">
+                             {res.type}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                    {totalResults > 5 && (
+                      <button 
+                        onClick={handleSearchSubmit}
+                        className="w-full p-4 text-center text-xs font-black uppercase tracking-widest text-blue-900 hover:bg-blue-900 hover:text-white transition-all bg-notebook-beige/50"
+                      >
+                         Ver todos os {totalResults} resultados
+                      </button>
+                    )}
+                  </>
+                ) : !isSearching && (
+                  <div className="p-8 text-center text-notebook-pencil/40 italic font-serif">
+                     Nenhum resultado encontrado para "{query}" no nível {level === 'college' ? 'Collège' : 'Lycée'}.
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </header>

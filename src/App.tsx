@@ -13,6 +13,7 @@ import AdminLayout from './components/admin/AdminLayout'
 import CatalogManager from './pages/admin/CatalogManager'
 import Login from './pages/Login'
 import MyCDI from './pages/MyCDI'
+import SearchResults from './pages/Search'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
           <Route path="librarian" element={<Librarian />} />
           <Route path="contact" element={<Contact />} />
           <Route path="login" element={<Login />} />
+          <Route path="search" element={<SearchResults />} />
           
           {/* Rota Protegida para Alunos */}
           <Route element={<ProtectedRoute allowedRoles={['user', 'admin']} />}>
