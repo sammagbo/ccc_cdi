@@ -75,35 +75,35 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
           
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group relative z-50">
-            <div className="w-10 h-10 bg-blue-900 rounded-lg flex items-center justify-center transform group-hover:rotate-12 transition-transform shadow-thick">
+          <Link to="/" className="flex items-center gap-4 group relative z-50 shrink-0">
+            <div className="w-11 h-11 bg-blue-900 rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-transform shadow-thick">
               <Library className="w-6 h-6 text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="font-serif font-bold text-xl md:text-2xl tracking-tighter text-blue-900 leading-none">
+              <span className="font-serif font-bold text-xl md:text-2xl tracking-tighter text-blue-900 leading-[0.8] mb-1">
                 Axelle Beurel
               </span>
-              <span className="text-[10px] font-black font-sans uppercase tracking-[0.2em] opacity-40 text-blue-900">
+              <span className="text-[9px] font-black font-sans uppercase tracking-[0.3em] opacity-30 text-blue-900">
                 CDI 2026
               </span>
             </div>
           </Link>
 
           {/* Nav Principal (Desktop) */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+          <nav className="hidden lg:flex items-center gap-x-8 xl:gap-x-12">
             {navLinks.map((link) => (
               <Link 
                 key={link.path} 
                 to={link.path}
                 className={cn(
-                  "text-sm font-bold uppercase tracking-widest transition-colors relative group",
-                  location.pathname === link.path ? "text-blue-900" : "text-notebook-pencil/60 hover:text-blue-900"
+                  "text-[11px] font-black uppercase tracking-[0.2em] transition-all relative group whitespace-nowrap py-2",
+                  location.pathname === link.path ? "text-blue-900" : "text-notebook-pencil/40 hover:text-blue-900"
                 )}
               >
                 {link.name}
                 <span className={cn(
-                  "absolute -bottom-2 left-0 w-full h-0.5 bg-blue-900 transition-transform origin-left",
-                  location.pathname === link.path ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                  "absolute bottom-0 left-0 w-full h-[3px] bg-blue-900/10 rounded-full transition-all origin-left",
+                  location.pathname === link.path ? "scale-x-100 bg-blue-900" : "scale-x-0 group-hover:scale-x-50"
                 )}></span>
               </Link>
             ))}
@@ -112,10 +112,10 @@ export default function Header() {
             <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={() => setDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-1 text-sm font-bold uppercase tracking-widest text-notebook-pencil/60 hover:text-blue-900 transition-colors"
+                className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-notebook-pencil/40 hover:text-blue-900 transition-all py-2 whitespace-nowrap"
               >
                 Espace Éducatif
-                <ChevronDown className={cn("w-4 h-4 transition-transform", isDropdownOpen && "rotate-180")} />
+                <ChevronDown className={cn("w-3.5 h-3.5 transition-transform opacity-50", isDropdownOpen && "rotate-180")} />
               </button>
               
               {/* Dropdown Content */}
@@ -140,23 +140,23 @@ export default function Header() {
           </nav>
 
           {/* Ações (Desktop & Mobile) */}
-          <div className="flex items-center gap-4 relative z-50">
+          <div className="flex items-center gap-6 relative z-50 shrink-0">
             {/* Global Level Toggle (Collège / Lycée) */}
             <button 
               onClick={() => setLevel(level === 'college' ? 'lycee' : 'college')}
-              className="hidden sm:flex shrink-0 items-center bg-notebook-beige border-2 border-notebook-lines rounded-full overflow-hidden p-1 hover:border-blue-200 transition-colors"
+              className="hidden xl:flex items-center bg-notebook-beige border-2 border-notebook-lines rounded-full overflow-hidden p-1 hover:border-blue-200 transition-colors shadow-inner"
               title="Changer de niveau"
             >
               <div className={cn(
-                "px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all",
-                level === 'college' ? "bg-blue-900 text-white shadow-md" : "text-notebook-pencil/40 hover:text-notebook-pencil/80"
+                "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all",
+                level === 'college' ? "bg-blue-900 text-white shadow-md scale-105" : "text-notebook-pencil/30 hover:text-notebook-pencil/60"
               )}>
                 <GraduationCap className="w-3.5 h-3.5" />
                 Collège
               </div>
               <div className={cn(
-                "px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all",
-                level === 'lycee' ? "bg-yellow-600 text-white shadow-md" : "text-notebook-pencil/40 hover:text-notebook-pencil/80"
+                "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all",
+                level === 'lycee' ? "bg-yellow-600 text-white shadow-md scale-105" : "text-notebook-pencil/30 hover:text-notebook-pencil/60"
               )}>
                 <GraduationCap className="w-3.5 h-3.5" />
                 Lycée
@@ -164,45 +164,45 @@ export default function Header() {
             </button>
 
             {/* Auth Actions */}
-            <div className="hidden lg:block border-l border-notebook-lines pl-6 h-8 flex items-center">
+            <div className="hidden lg:flex border-l border-notebook-lines pl-6 h-10 items-center">
               {user ? (
                 <div className="flex items-center gap-4">
                   {user.role === 'admin' && (
                     <Link 
                       to="/admin" 
-                      className="text-[10px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100 hover:bg-emerald-100 transition-colors flex items-center gap-2"
+                      className="text-[9px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 px-3 py-2 rounded-lg border border-emerald-100 hover:bg-emerald-100 transition-colors flex items-center gap-2 shadow-sm"
                     >
                       <Shield className="w-3 h-3" />
                       Admin
                     </Link>
                   )}
-                  <div className="flex items-center gap-3 pr-2 border-r border-notebook-lines mr-1">
+                  <div className="flex items-center gap-4 pr-2 border-r border-notebook-lines mr-2">
                     <Link 
                       to="/my-cdi" 
-                      className="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                      className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm hover:scale-105 active:scale-95"
                       title="Mon Espace CDI"
                     >
-                      <Bookmark className="w-4 h-4 fill-current" />
+                      <Bookmark className="w-4.5 h-4.5 fill-current" />
                     </Link>
                     <div className="flex flex-col items-end">
-                      <span className="text-xs font-bold text-blue-950 leading-none">{user.name}</span>
-                      <span className="text-[10px] font-medium text-notebook-pencil/50 capitalize">{user.role}</span>
+                      <span className="text-[11px] font-black text-blue-950 leading-none uppercase tracking-wider">{user.name}</span>
+                      <span className="text-[9px] font-bold text-notebook-pencil/40 uppercase tracking-widest mt-0.5">{user.role}</span>
                     </div>
-                    <button 
-                      onClick={handleLogout}
-                      className="w-9 h-9 rounded-full bg-notebook-beige border border-notebook-lines flex items-center justify-center text-notebook-pencil hover:text-rose-500 hover:bg-rose-50 transition-colors"
-                      title="Sair"
-                    >
-                      <LogOut className="w-4 h-4" />
-                    </button>
                   </div>
+                  <button 
+                    onClick={handleLogout}
+                    className="w-10 h-10 rounded-full bg-notebook-beige border border-notebook-lines flex items-center justify-center text-notebook-pencil/40 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-all shadow-sm"
+                    title="Sair"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
                 </div>
               ) : (
                 <Link 
                   to="/login"
-                  className="px-5 py-2 rounded-xl bg-blue-900 border border-blue-950 text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-sm flex items-center gap-2"
+                  className="px-6 py-2.5 rounded-xl bg-blue-900 border border-blue-950 text-white text-[11px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all shadow-md active:scale-95 flex items-center gap-2"
                 >
-                  <User className="w-3.5 h-3.5" />
+                  <User className="w-4 h-4" />
                   Connexion
                 </Link>
               )}
