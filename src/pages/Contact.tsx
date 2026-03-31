@@ -58,21 +58,21 @@ export default function Contact() {
                    <div className="text-xs font-black uppercase tracking-widest text-notebook-pencil/40 bg-notebook-beige px-2 py-1 rounded w-fit">
                      2ª feira a 6ª feira
                    </div>
-                   <div className="flex items-baseline gap-2 mt-2">
-                     <span className="text-3xl font-bold font-serif text-blue-950">08h30</span>
-                     <span className="text-notebook-pencil font-medium">—</span>
-                     <span className="text-3xl font-bold font-serif text-blue-950">17h00</span>
-                   </div>
+                    <div className="flex items-baseline gap-2 mt-2">
+                      <span className="text-3xl font-bold font-serif text-blue-950">08h00</span>
+                      <span className="text-notebook-pencil font-medium">—</span>
+                      <span className="text-3xl font-bold font-serif text-blue-950">17h00</span>
+                    </div>
                  </li>
                  <li className="flex flex-col gap-1 pt-4 border-t border-dashed border-notebook-lines">
                    <div className="text-xs font-black uppercase tracking-widest text-orange-800/60 bg-orange-100 px-2 py-1 rounded w-fit">
                      Pausa para Almoço
                    </div>
-                   <div className="flex items-baseline gap-2 mt-2">
-                     <span className="text-xl font-bold font-serif text-notebook-pencil">12h30</span>
-                     <span className="text-notebook-pencil/50">—</span>
-                     <span className="text-xl font-bold font-serif text-notebook-pencil">13h30</span>
-                   </div>
+                    <div className="flex items-baseline gap-2 mt-2">
+                      <span className="text-xl font-bold font-serif text-notebook-pencil">11h00</span>
+                      <span className="text-notebook-pencil/50">—</span>
+                      <span className="text-xl font-bold font-serif text-notebook-pencil">12h00</span>
+                    </div>
                    <p className="text-sm text-notebook-pencil/60 mt-1 italic font-serif">Encerrado durante a hora de almoço.</p>
                  </li>
                </ul>
@@ -93,12 +93,9 @@ export default function Contact() {
                </h2>
                
                <div className="space-y-4">
-                 <p className="text-lg md:text-xl font-medium text-notebook-pencil leading-relaxed bg-emerald-50/50 p-4 rounded-xl border border-emerald-100/50">
-                    O CDI está localizado no <strong className="font-black text-emerald-800">Bloco D</strong>.
-                 </p>
-                 <p className="text-base text-notebook-pencil/80 leading-relaxed font-serif">
-                   Mais especificamente, ficamos mesmo ao lado da sala da <span className="italic">Vie scolaire secondaire</span> do Lycée Molière. Basta seguir as placas no corredor principal!
-                 </p>
+                  <p className="text-base text-notebook-pencil/80 leading-relaxed font-serif">
+                    O CDI está localizado no Bloco D, mesmo ao lado da sala da Vie scolaire secondaire do Lycée Molière. Basta seguir as placas no corredor principal!
+                  </p>
                </div>
                
                {/* Decorative Element */}

@@ -31,15 +31,8 @@ export default function Footer() {
               <li className="flex items-start gap-3 text-sm text-notebook-pencil/80">
                 <Clock className="w-4 h-4 text-blue-900 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold block">Lundi, Mardi, Jeudi</span>
-                  <span>08h00 - 17h30</span>
-                </div>
-              </li>
-              <li className="flex items-start gap-3 text-sm text-notebook-pencil/80">
-                <Clock className="w-4 h-4 text-blue-900 shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-bold block">Mercredi, Vendredi</span>
-                  <span>08h00 - 12h30</span>
+                  <span className="font-bold block">Lundi au Vendredi</span>
+                  <span>08h00 - 17h00</span>
                 </div>
               </li>
             </ul>
@@ -51,7 +44,7 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-center gap-3 text-sm text-notebook-pencil/80">
                 <MapPin className="w-4 h-4 text-blue-900 shrink-0" />
-                <span>Bâtiment Central, 2ème étage</span>
+                <span>Bloc D, Lycée Molière</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-notebook-pencil/80">
                 <Mail className="w-4 h-4 text-blue-900 shrink-0" />
