@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Library, Menu, X, Search, ChevronDown, GraduationCap, ArrowRight, User, LogOut, Shield } from 'lucide-react'
+import { Library, Menu, X, Search, ChevronDown, GraduationCap, ArrowRight, User, LogOut, Shield, Bookmark } from 'lucide-react'
 import { useAppStore } from '@/store/useAppStore'
 import { cn } from '@/lib/utils'
 
@@ -155,7 +155,14 @@ export default function Header() {
                       Admin
                     </Link>
                   )}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 pr-2 border-r border-notebook-lines mr-1">
+                    <Link 
+                      to="/my-cdi" 
+                      className="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                      title="Mon Espace CDI"
+                    >
+                      <Bookmark className="w-4 h-4 fill-current" />
+                    </Link>
                     <div className="flex flex-col items-end">
                       <span className="text-xs font-bold text-blue-950 leading-none">{user.name}</span>
                       <span className="text-[10px] font-medium text-notebook-pencil/50 capitalize">{user.role}</span>
@@ -276,6 +283,12 @@ export default function Header() {
                     <Shield className="w-4 h-4" /> Painel de Gestão
                   </Link>
                 )}
+                <Link 
+                  to="/my-cdi" 
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-blue-100 bg-blue-50 text-blue-800 font-bold text-sm tracking-widest uppercase transition-all"
+                >
+                  <Bookmark className="w-4 h-4 fill-current" /> Mon Espace CDI
+                </Link>
                 <button 
                   onClick={handleLogout}
                   className="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-rose-100 bg-rose-50 text-rose-800 font-bold text-sm tracking-widest uppercase transition-all"

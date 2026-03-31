@@ -1,28 +1,59 @@
-import { BookMarked, CheckCircle, XCircle, Info, ExternalLink } from 'lucide-react'
+import { BookMarked, CheckCircle, XCircle, Info, ExternalLink, Bookmark } from 'lucide-react'
 import { CatalogBook } from '../../services/catalogData'
 import { Link } from 'react-router-dom'
+import { useAppStore } from '../../store/useAppStore'
+import { cn } from '../../lib/utils'
 
 export default function BookCard({ book }: { book: CatalogBook }) {
+  const { user, favorites, toggleFavorite } = useAppStore()
   const isAvailable = book.available
+  const isFavorited = favorites.includes(book.id)
+
+  const handleToggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (!user) {
+      alert('Inicia sessão para guardar livros nos teus favoritos! ✨')
+      return
+    }
+
+    toggleFavorite(book.id)
+  }
 
   return (
-    <div className="glass-card flex flex-col h-full rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group border-notebook-lines border-2">
+    <div className="glass-card flex flex-col h-full rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group border-notebook-lines border-2 relative">
+      
+      {/* Favorite Toggle Button (Floating) */}
+      <button 
+        onClick={handleToggleFavorite}
+        className={cn(
+          "absolute top-4 left-4 z-20 w-9 h-9 rounded-xl border-2 transition-all flex items-center justify-center shadow-sm",
+          isFavorited 
+            ? "bg-blue-900 border-blue-900 text-white" 
+            : "bg-white/90 backdrop-blur-sm border-notebook-lines text-notebook-pencil hover:border-blue-400 hover:text-blue-900"
+        )}
+        title={isFavorited ? "Remover dos favoritos" : "Guardar nos favoritos"}
+      >
+        <Bookmark className={cn("w-5 h-5", isFavorited && "fill-current")} />
+      </button>
+
       {/* Cover / Top Section */}
       <div className="relative aspect-[3/2] w-full bg-blue-50 flex flex-col items-center justify-center p-6 border-b-2 border-notebook-lines border-dashed">
         <div className="absolute inset-0 bg-notebook-dots opacity-20"></div>
         
         {/* Type Badge */}
-        <div className="absolute top-3 left-3 bg-white px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest text-notebook-pencil shadow-sm border border-notebook-lines">
+        <div className="absolute top-3 right-3 bg-white px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest text-notebook-pencil shadow-sm border border-notebook-lines opacity-40 group-hover:opacity-100 transition-opacity">
           {book.type}
         </div>
 
         {/* Level Badges */}
-        <div className="absolute top-3 right-3 flex flex-col gap-1 items-end">
+        <div className="absolute bottom-3 right-3 flex gap-1">
           {book.levels.includes('college') && (
-            <span className="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm uppercase">Collège</span>
+            <span className="bg-emerald-100 text-emerald-800 text-[9px] px-2 py-0.5 rounded-full font-bold shadow-sm uppercase">Collège</span>
           )}
           {book.levels.includes('lycee') && (
-            <span className="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm uppercase">Lycée</span>
+            <span className="bg-amber-100 text-amber-800 text-[9px] px-2 py-0.5 rounded-full font-bold shadow-sm uppercase">Lycée</span>
           )}
         </div>
 

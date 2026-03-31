@@ -12,6 +12,7 @@ import Contact from './pages/Contact'
 import AdminLayout from './components/admin/AdminLayout'
 import CatalogManager from './pages/admin/CatalogManager'
 import Login from './pages/Login'
+import MyCDI from './pages/MyCDI'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 
 function App() {
@@ -38,6 +39,11 @@ function App() {
           <Route path="librarian" element={<Librarian />} />
           <Route path="contact" element={<Contact />} />
           <Route path="login" element={<Login />} />
+          
+          {/* Rota Protegida para Alunos */}
+          <Route element={<ProtectedRoute allowedRoles={['user', 'admin']} />}>
+            <Route path="my-cdi" element={<MyCDI />} />
+          </Route>
         </Route>
 
         {/* Roteamento de Admin (Protegido / Isolado) */}

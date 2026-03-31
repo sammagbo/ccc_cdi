@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { CatalogBook } from '../services/catalogData'
 import { bookService } from '../services/bookService'
+import { userService } from '../services/userService'
 
 export type UserRole = 'user' | 'admin'
 
@@ -22,6 +23,10 @@ interface AppState {
   login: (email: string, password: string) => Promise<boolean>
   logout: () => void
 
+  // User Specific Data
+  favorites: string[]
+  toggleFavorite: (bookId: string) => Promise<void>
+
   // Catalog State & Async handling
   books: CatalogBook[]
   isLoading: boolean
@@ -32,7 +37,7 @@ interface AppState {
   deleteBook: (id: string) => Promise<void>
 }
 
-export const useAppStore = create<AppState>((set) => ({
+export const useAppStore = create<AppState>((set, get) => ({
   level: 'college',
   setLevel: (level) => set({ level }),
   isSearchOpen: false,
@@ -43,25 +48,28 @@ export const useAppStore = create<AppState>((set) => ({
   login: async (email, password) => {
     return new Promise((resolve) => {
       setTimeout(() => {
+        let loggedUser: AuthUser | null = null
+
         if (email === 'admin@lyceemoliere.com' && password === 'admin123') {
-          set({
-            user: {
-              id: 'u_admin_1',
-              email: 'admin@lyceemoliere.com',
-              name: 'Axelle Beurel',
-              role: 'admin'
-            }
-          })
-          resolve(true)
+          loggedUser = {
+            id: 'u_admin_1',
+            email: 'admin@lyceemoliere.com',
+            name: 'Axelle Beurel',
+            role: 'admin'
+          }
         } else if (email === 'aluno@lyceemoliere.com' && password === 'aluno123') {
-          set({
-            user: {
-              id: 'u_user_1',
-              email: 'aluno@lyceemoliere.com',
-              name: 'Jean Dubois',
-              role: 'user'
-            }
-          })
+          loggedUser = {
+            id: 'u_user_1',
+            email: 'aluno@lyceemoliere.com',
+            name: 'Jean Dubois',
+            role: 'user'
+          }
+        }
+
+        if (loggedUser) {
+          // Ao logar, carregar os favoritos do utilizador
+          const userFavorites = userService.getFavorites(loggedUser.id)
+          set({ user: loggedUser, favorites: userFavorites })
           resolve(true)
         } else {
           resolve(false)
@@ -69,7 +77,31 @@ export const useAppStore = create<AppState>((set) => ({
       }, 600)
     })
   },
-  logout: () => set({ user: null }),
+  logout: () => set({ user: null, favorites: [] }),
+
+  // User Data
+  favorites: [],
+  toggleFavorite: async (bookId: string) => {
+    const { user, favorites } = get()
+    if (!user) return
+
+    // Optimistic Update
+    const isFavorited = favorites.includes(bookId)
+    const newFavorites = isFavorited 
+      ? favorites.filter(id => id !== bookId)
+      : [bookId, ...favorites]
+    
+    set({ favorites: newFavorites })
+
+    try {
+      // Persistência em background
+      await userService.toggleFavorite(user.id, bookId)
+    } catch (err) {
+      // Rollback em caso de erro (raro em LocalStorage, mas boa prática)
+      console.error('Erro ao guardar favorito:', err)
+      set({ favorites })
+    }
+  },
 
   // Catalog State
   books: [],
