@@ -1,4 +1,5 @@
 import { Heart, Megaphone, Calendar } from 'lucide-react'
+import axellePhoto from '../assets/axelle-beurel.jpg'
 
 // Mock Data
 const coupsDeCoeur = [
@@ -64,7 +65,7 @@ export default function Librarian() {
             <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-xl overflow-hidden bg-rose-100 flex items-center justify-center">
               {/* Usando uma foto de banco de imagens como placeholder da bibliotecária */}
               <img 
-                src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&q=80&w=400" 
+                src={axellePhoto} 
                 alt="Axelle Beurel - Documentaliste"
                 className="w-full h-full object-cover"
               />
@@ -80,7 +81,7 @@ export default function Librarian() {
               Bem-vindos ao meu espaço!
             </h1>
             <p className="text-lg md:text-xl text-amber-900/80 font-serif italic leading-relaxed">
-              "Olá! Sou a Axelle Beurel, a vossa bibliotecária. O CDI é um espaço vosso, para explorar, descobrir e partilhar. Quer precisem de ajuda com uma pesquisa escolar ou apenas de uma recomendação para descontrair, estou aqui para ajudar."
+              "Bonjour ! Je suis Axelle Beurel, professeure documentaliste au Lycée Molière. Le CDI est votre espace : un lieu pour explorer, découvrir et partager. Que vous ayez besoin d'aide pour une recherche scolaire ou simplement d'une recommandation pour vous détendre, je suis là pour vous accompagner."
             </p>
           </div>
         </section>
