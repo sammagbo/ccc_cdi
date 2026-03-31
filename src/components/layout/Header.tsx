@@ -12,15 +12,46 @@ export default function Header() {
   const dropdownRef = useRef<HTMLDivElement>(null)
   
   const { level, setLevel, isSearchOpen, setSearchOpen, user, logout } = useAppStore()
-  const { query, setQuery, topResults, isSearching, totalResults } = useOmnisearch()
+  const { query, setQuery, suggestions, topResults, isSearching, totalResults, activeIndex, setActiveIndex } = useOmnisearch()
   const location = useLocation()
   const navigate = useNavigate()
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  // Lista unificada para navegação por teclado
+  const selectableItems = [
+    ...suggestions.map(s => ({ type: 'suggestion', value: s })),
+    ...topResults.map(r => ({ type: 'result', value: r }))
+  ]
+
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
     if (query.trim()) {
       setSearchOpen(false)
       navigate(`/search?q=${encodeURIComponent(query)}`)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setActiveIndex(prev => (prev < selectableItems.length - 1 ? prev + 1 : prev))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setActiveIndex(prev => (prev > -1 ? prev - 1 : -1))
+    } else if (e.key === 'Enter') {
+      if (activeIndex >= 0 && activeIndex < selectableItems.length) {
+        const item = selectableItems[activeIndex]
+        if (item.type === 'suggestion') {
+          setQuery(item.value as string)
+          setActiveIndex(-1)
+        } else {
+          setSearchOpen(false)
+          navigate((item.value as any).url)
+        }
+      } else {
+        handleSearchSubmit()
+      }
+    } else if (e.key === 'Escape') {
+      setSearchOpen(false)
     }
   }
 
@@ -242,58 +273,111 @@ export default function Header() {
               <input 
                 type="text" 
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value)
+                  setActiveIndex(-1)
+                }}
+                onKeyDown={handleKeyDown}
                 placeholder={`Rechercher un livre, un auteur, une thématique...`}
-                className="w-full pl-14 pr-32 py-4 bg-transparent border-b-2 border-notebook-lines text-2xl font-serif text-blue-900 placeholder-notebook-pencil/30 focus:outline-none focus:ring-0 focus:border-blue-300 transition-colors"
+                className="w-full pl-14 pr-32 py-5 bg-transparent border-b-2 border-notebook-lines text-2xl font-serif text-blue-900 placeholder-notebook-pencil/30 focus:outline-none focus:ring-0 focus:border-blue-300 transition-colors"
                 autoFocus={isSearchOpen}
               />
               <div className="absolute right-4 flex items-center gap-4">
                 {isSearching && <Loader2 className="w-5 h-5 animate-spin text-blue-900" />}
-                <button type="button" onClick={() => setSearchOpen(false)} className="text-xs font-bold uppercase tracking-widest text-notebook-pencil/40 hover:text-blue-900">
-                  Fermer (ESC)
+                <button type="submit" className="hidden sm:block text-[10px] font-black uppercase tracking-[0.2em] bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-black transition-colors">
+                  Chercher
+                </button>
+                <button type="button" onClick={() => setSearchOpen(false)} className="text-[10px] font-black uppercase tracking-widest text-notebook-pencil/40 hover:text-blue-900 pr-2">
+                  ESC
                 </button>
               </div>
             </form>
 
-            {/* Drodown de Resultados Rápidos */}
+            {/* Google-Style Predictive Dropdown */}
             {query.length >= 2 && (
-              <div className="bg-notebook-beige/30 rounded-xl border border-notebook-lines overflow-hidden shadow-inner animate-fade-in">
-                {topResults.length > 0 ? (
-                  <>
-                    <div className="divide-y divide-notebook-lines/30">
-                      {topResults.map((res) => (
-                        <Link
-                          key={res.id}
-                          to={res.url}
-                          onClick={() => setSearchOpen(false)}
-                          className="flex items-center gap-4 p-4 hover:bg-white transition-colors group"
-                        >
-                          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm border border-notebook-lines group-hover:scale-110 transition-transform">
-                            {getResultIcon(res.type)}
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="text-sm font-bold text-blue-950 group-hover:text-blue-700">{res.title}</h4>
-                            <p className="text-[10px] uppercase font-black tracking-widest text-notebook-pencil/40">{res.subtitle}</p>
-                          </div>
-                          <div className="text-[10px] font-black uppercase text-notebook-pencil/20 tracking-widest group-hover:text-blue-900/40">
-                             {res.type}
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                    {totalResults > 5 && (
-                      <button 
-                        onClick={handleSearchSubmit}
-                        className="w-full p-4 text-center text-xs font-black uppercase tracking-widest text-blue-900 hover:bg-blue-900 hover:text-white transition-all bg-notebook-beige/50"
+              <div className="bg-white rounded-2xl border border-notebook-lines shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] overflow-hidden animate-fade-in divide-y divide-notebook-lines/30">
+                
+                {/* Section: Suggestions (Autocomplete) */}
+                {suggestions.length > 0 && (
+                  <div className="py-2">
+                    {suggestions.map((s, idx) => (
+                      <div 
+                        key={s}
+                        onClick={() => {
+                          setQuery(s)
+                          handleSearchSubmit()
+                        }}
+                        onMouseEnter={() => setActiveIndex(idx)}
+                        className={cn(
+                          "flex items-center gap-4 px-6 py-3 cursor-pointer transition-colors",
+                          activeIndex === idx ? "bg-notebook-beige/50" : "hover:bg-notebook-beige/20"
+                        )}
                       >
-                         Ver todos os {totalResults} resultados
-                      </button>
-                    )}
-                  </>
-                ) : !isSearching && (
-                  <div className="p-8 text-center text-notebook-pencil/40 italic font-serif">
-                     Nenhum resultado encontrado para "{query}" no nível {level === 'college' ? 'Collège' : 'Lycée'}.
+                        <Search className="w-4 h-4 text-notebook-pencil/20" />
+                        <span className="text-base font-serif text-blue-950 font-medium">
+                          {s.toLowerCase().startsWith(query.toLowerCase()) ? (
+                            <>
+                              <span className="text-notebook-pencil/40">{s.slice(0, query.length)}</span>
+                              <span className="font-bold">{s.slice(query.length)}</span>
+                            </>
+                          ) : s}
+                        </span>
+                      </div>
+                    ))}
                   </div>
+                )}
+
+                {/* Section: Fast Results (Top Matches) */}
+                {topResults.length > 0 ? (
+                  <div className="bg-notebook-beige/5">
+                    <div className="px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-notebook-pencil/30">
+                      Resultados Rápidos
+                    </div>
+                    <div className="divide-y divide-notebook-lines/10">
+                      {topResults.map((res, idx) => {
+                        const globalIdx = idx + suggestions.length
+                        return (
+                          <Link
+                            key={res.id}
+                            to={res.url}
+                            onMouseEnter={() => setActiveIndex(globalIdx)}
+                            onClick={() => setSearchOpen(false)}
+                            className={cn(
+                              "flex items-center gap-4 px-6 py-4 transition-all group",
+                              activeIndex === globalIdx ? "bg-notebook-beige/60" : "hover:bg-white"
+                            )}
+                          >
+                            <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-sm border border-notebook-lines group-hover:scale-105 transition-transform">
+                              {getResultIcon(res.type)}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-sm font-bold text-blue-950 group-hover:text-blue-700 leading-tight">{res.title}</h4>
+                              <p className="text-[10px] uppercase font-black tracking-widest text-notebook-pencil/40 mt-0.5">{res.subtitle}</p>
+                            </div>
+                            <div className="text-[9px] font-black uppercase text-notebook-pencil/10 tracking-widest group-hover:text-blue-900/30">
+                               {res.type}
+                            </div>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ) : !isSearching && suggestions.length === 0 && (
+                  <div className="p-12 text-center">
+                    <p className="text-notebook-pencil/40 italic font-serif">
+                       Nenhum resultado para "{query}" no nível {level === 'college' ? 'Collège' : 'Lycée'}.
+                    </p>
+                  </div>
+                )}
+
+                {/* Footer: Full Results */}
+                {totalResults > 5 && (
+                  <button 
+                    onClick={handleSearchSubmit}
+                    className="w-full py-4 text-center text-[10px] font-black uppercase tracking-[0.2em] text-blue-900 hover:bg-blue-900 hover:text-white transition-all bg-notebook-beige/20 border-t border-notebook-lines/30"
+                  >
+                     Ver todos os {totalResults} resultados <ArrowRight className="inline w-3 h-3 ml-2" />
+                  </button>
                 )}
               </div>
             )}

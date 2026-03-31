@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
-import { BookOpen, Video, HelpCircle, Bell, ArrowLeft, ShieldCheck } from 'lucide-react'
+import { BookOpen, Video, HelpCircle, Bell, ArrowLeft, ShieldCheck, BarChart3 } from 'lucide-react'
 
 export default function AdminLayout() {
   const location = useLocation()
@@ -8,6 +8,7 @@ export default function AdminLayout() {
     { name: 'Catálogo', path: '/admin/catalog', icon: BookOpen },
     { name: 'Multimédia', path: '/admin/media', icon: Video },
     { name: 'Quizzes', path: '/admin/quizzes', icon: HelpCircle },
+    { name: 'Relatórios', path: '/admin/analytics', icon: BarChart3 },
     { name: 'Avisos', path: 'disabled', icon: Bell },
   ]
 

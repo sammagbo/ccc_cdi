@@ -15,6 +15,7 @@ import Login from './pages/Login'
 import MyCDI from './pages/MyCDI'
 import SearchResults from './pages/Search'
 import ProtectedRoute from './components/layout/ProtectedRoute'
+import Reports from './pages/admin/Reports'
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="catalog" replace />} />
             <Route path="catalog" element={<CatalogManager />} />
+            <Route path="analytics" element={<Reports />} />
             <Route path="media" element={<div className="p-12"><h2 className="text-2xl font-bold">Gestão Multimédia em breve...</h2></div>} />
             <Route path="quizzes" element={<div className="p-12"><h2 className="text-2xl font-bold">Gestão de Quizzes em breve...</h2></div>} />
           </Route>

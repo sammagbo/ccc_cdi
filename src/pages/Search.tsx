@@ -1,23 +1,25 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { Search, Book, FileText, PlayCircle, Zap, ArrowRight, Loader2 } from 'lucide-react'
+import { Search, Book, FileText, PlayCircle, Zap, ArrowRight, Loader2, X } from 'lucide-react'
 import { searchService, SearchResult, SearchResultType } from '../services/searchService'
 import { useAppStore } from '../store/useAppStore'
 
 export default function SearchResults() {
-  const [searchParams] = useSearchParams()
-  const query = searchParams.get('q') || ''
-  const level = useAppStore(state => state.level)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const initialQuery = searchParams.get('q') || ''
   
+  const [localQuery, setLocalQuery] = useState(initialQuery)
   const [results, setResults] = useState<SearchResult[]>([])
   const [isSearching, setIsSearching] = useState(false)
+  
+  const level = useAppStore(state => state.level)
 
   useEffect(() => {
     const performSearch = async () => {
-      if (!query) return
+      if (!initialQuery) return
       setIsSearching(true)
       try {
-        const data = await searchService.searchAll(query, level)
+        const data = await searchService.searchAll(initialQuery, level)
         setResults(data)
       } catch (err) {
         console.error(err)
@@ -26,7 +28,14 @@ export default function SearchResults() {
       }
     }
     performSearch()
-  }, [query, level])
+  }, [initialQuery, level])
+
+  const handleLocalSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (localQuery.trim()) {
+      setSearchParams({ q: localQuery })
+    }
+  }
 
   const getResultIcon = (type: SearchResultType) => {
     switch (type) {
@@ -47,76 +56,122 @@ export default function SearchResults() {
 
   const categories = [
     { type: 'Book' as SearchResultType, label: 'Livros no Catálogo', icon: <Book className="w-6 h-6" /> },
-    { type: 'PDF' as SearchResultType, label: 'Materiais de Estudo (PDFs)', icon: <FileText className="w-6 h-6" /> },
-    { type: 'Media' as SearchResultType, label: 'Vídeos e Podcasts', icon: <PlayCircle className="w-6 h-6" /> },
-    { type: 'Quiz' as SearchResultType, label: 'Desafios e Quizzes', icon: <Zap className="w-6 h-6" /> },
+    { type: 'PDF' as SearchResultType, label: 'Materiais de Estudo', icon: <FileText className="w-6 h-6" /> },
+    { type: 'Media' as SearchResultType, label: 'Multimédia', icon: <PlayCircle className="w-6 h-6" /> },
+    { type: 'Quiz' as SearchResultType, label: 'Quizzes e Desafios', icon: <Zap className="w-6 h-6" /> },
   ]
 
   return (
-    <div className="min-h-screen pt-12 pb-24 max-w-7xl mx-auto px-6">
+    <div className="min-h-screen pt-12 pb-24 max-w-7xl mx-auto px-6 font-sans">
       
-      {/* Search Header */}
-      <div className="mb-12 border-b-2 border-notebook-lines pb-8">
-        <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-blue-900 rounded-2xl flex items-center justify-center text-white shadow-thick">
-                <Search className="w-6 h-6" />
+      {/* Search Header & Integrated Bar */}
+      <div className="mb-12 border-b-2 border-notebook-lines pb-12 flex flex-col md:flex-row md:items-end justify-between gap-8 animate-fade-in-up">
+        <div className="max-w-2xl flex-1">
+          <div className="flex items-center gap-4 mb-6">
+              <div className="w-14 h-14 bg-blue-900 rounded-2xl flex items-center justify-center text-white shadow-thick transform -rotate-3">
+                  <Search className="w-7 h-7" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-serif font-bold text-blue-900 italic leading-none">
+                    Pesquisa CDI
+                </h1>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-notebook-pencil/30 mt-2">
+                  Resultados Federados • Nível {level}
+                </p>
+              </div>
+          </div>
+          
+          <form onSubmit={handleLocalSubmit} className="relative group max-w-xl">
+            <input 
+              type="text"
+              value={localQuery}
+              onChange={(e) => setLocalQuery(e.target.value)}
+              className="w-full bg-white border-2 border-notebook-lines rounded-2xl px-6 py-4 text-lg font-serif text-blue-950 shadow-sm focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all outline-none"
+              placeholder="Pesquisar novamente..."
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              {localQuery && (
+                <button 
+                  type="button" 
+                  onClick={() => setLocalQuery('')}
+                  className="p-2 text-notebook-pencil/20 hover:text-rose-500 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+              <button 
+                type="submit"
+                className="bg-blue-900 text-white p-3 rounded-xl hover:bg-black transition-all shadow-md group-hover:scale-105 active:scale-95"
+              >
+                <Search className="w-5 h-5" />
+              </button>
             </div>
-            <h1 className="text-4xl font-serif font-bold text-blue-900 italic">
-                Resultados da Pesquisa
-            </h1>
+          </form>
         </div>
-        <p className="text-notebook-pencil/60 font-medium">
-            Encontrámos <span className="text-blue-900 font-bold">{results.length}</span> resultados para 
-            <span className="bg-notebook-beige px-3 py-1 rounded-lg ml-2 text-blue-900 font-serif italic font-bold">"{query}"</span>
-            no nível <span className="capitalize font-bold">{level}</span>.
-        </p>
+
+        <div className="bg-notebook-beige/40 border border-notebook-lines rounded-2xl px-6 py-4 flex flex-col items-end">
+          <span className="text-[10px] font-black uppercase tracking-widest text-notebook-pencil/40 mb-1">Status da Busca</span>
+          <p className="text-sm font-serif italic text-blue-900">
+            {isSearching ? 'A vasculhar...' : `${results.length} correspondências encontradas`}
+          </p>
+        </div>
       </div>
 
       {isSearching ? (
-        <div className="flex flex-col items-center justify-center py-20 grayscale opacity-50">
-            <Loader2 className="w-12 h-12 animate-spin text-blue-900 mb-4" />
-            <p className="font-serif italic text-lg">A vasculhar o CDI...</p>
+        <div className="flex flex-col items-center justify-center py-24 grayscale opacity-50">
+            <Loader2 className="w-16 h-16 animate-spin text-blue-900 mb-6" />
+            <p className="font-serif italic text-xl tracking-tight">O motor de busca está a processar os dados...</p>
         </div>
       ) : results.length > 0 ? (
-        <div className="space-y-16">
+        <div className="space-y-20">
           {categories.map((cat) => {
             const catResults = groupedResults[cat.type] || []
             if (catResults.length === 0) return null
 
             return (
-              <section key={cat.type} className="animate-fade-in">
-                <div className="flex items-center gap-3 mb-8 border-l-4 border-blue-900 pl-4">
-                  <div className="text-blue-900 opacity-60">{cat.icon}</div>
-                  <h2 className="text-2xl font-serif font-bold text-blue-950">
-                    {cat.label} ({catResults.length})
-                  </h2>
+              <section key={cat.type} className="animate-fade-in-up">
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-900 border border-blue-100 shadow-sm">
+                      {cat.icon}
+                    </div>
+                    <h2 className="text-2xl font-serif font-bold text-blue-950 italic">
+                      {cat.label}
+                    </h2>
+                  </div>
+                  <div className="h-px flex-1 bg-notebook-lines/30 mx-8 hidden lg:block"></div>
+                  <span className="bg-white border-2 border-notebook-lines px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest text-blue-900/40">
+                    {catResults.length} {catResults.length === 1 ? 'Item' : 'Itens'}
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {catResults.map((res) => (
                     <Link
                       key={res.id}
                       to={res.url}
-                      className="glass-card flex flex-col p-6 rounded-2xl border-2 border-notebook-lines hover:border-blue-300 hover:shadow-xl transition-all group"
+                      className="group flex flex-col bg-white p-8 rounded-3xl border-2 border-notebook-lines hover:border-blue-300 hover:shadow-2xl transition-all relative overflow-hidden"
                     >
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-white rounded-xl shadow-sm border border-notebook-lines group-hover:scale-110 transition-transform">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50/50 rounded-bl-[100px] -translate-y-12 translate-x-12 group-hover:translate-x-10 group-hover:-translate-y-10 transition-transform"></div>
+                      
+                      <div className="flex justify-between items-start mb-6 relative z-10">
+                        <div className="p-3 bg-blue-50 rounded-2xl shadow-sm border border-blue-100 group-hover:scale-110 group-hover:bg-blue-900 group-hover:text-white transition-all duration-300">
                           {getResultIcon(res.type)}
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-notebook-pencil/30 group-hover:text-blue-900 transition-colors">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-notebook-pencil/30 group-hover:text-blue-900 transition-colors">
                           {res.category || res.type}
                         </span>
                       </div>
                       
-                      <h3 className="text-xl font-serif font-bold text-blue-900 mb-2 leading-tight">
+                      <h3 className="text-2xl font-serif font-bold text-blue-900 mb-2 leading-tight group-hover:text-blue-700 transition-colors">
                         {res.title}
                       </h3>
-                      <p className="text-sm font-bold text-notebook-pencil/50 uppercase tracking-widest mb-4">
+                      <p className="text-xs font-bold text-notebook-pencil/50 uppercase tracking-widest mb-6">
                         {res.subtitle}
                       </p>
                       
-                      <div className="mt-auto flex items-center gap-2 text-xs font-black uppercase tracking-tighter text-blue-950/40 group-hover:text-blue-900 transition-colors">
-                        Ver detalhes <ArrowRight className="w-3 h-3 translate-x-0 group-hover:translate-x-1 transition-transform" />
+                      <div className="mt-auto flex items-center gap-3 text-xs font-black uppercase tracking-widest text-blue-950/40 group-hover:text-blue-900 transition-colors">
+                        Explorar Conteúdo <ArrowRight className="w-4 h-4 translate-x-0 group-hover:translate-x-2 transition-transform" />
                       </div>
                     </Link>
                   ))}
@@ -126,21 +181,29 @@ export default function SearchResults() {
           })}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 px-6 text-center border-2 border-notebook-lines border-dashed rounded-3xl bg-white/40 grayscale">
-            <div className="w-20 h-20 bg-blue-50 border-2 border-notebook-lines rounded-full flex items-center justify-center mb-6 shadow-sm">
-                <Search className="w-10 h-10 text-notebook-pencil/20" />
+        <div className="flex flex-col items-center justify-center py-24 px-6 text-center border-2 border-notebook-lines border-dashed rounded-[40px] bg-notebook-beige/20 animate-fade-in grayscale">
+            <div className="w-24 h-24 bg-white border-2 border-notebook-lines rounded-full flex items-center justify-center mb-8 shadow-thick">
+                <Search className="w-10 h-10 text-notebook-pencil/10" />
             </div>
-            <h2 className="text-2xl font-serif font-bold text-blue-900 mb-2">Nenhum resultado encontrado</h2>
-            <p className="text-notebook-pencil/70 max-w-sm mx-auto mb-8 font-medium italic">
-                Não conseguimos encontrar nada que corresponda a "{query}". <br/>
-                Tenta pesquisar por termos mais genéricos ou mudar o nível de ensino.
+            <h2 className="text-3xl font-serif font-bold text-blue-900 mb-4 italic">Nenhum resultado para "{initialQuery}"</h2>
+            <p className="text-notebook-pencil/60 max-w-md mx-auto mb-10 font-medium text-lg leading-relaxed">
+              Tentou pesquisar algo diferente? <br/>
+              Verifique se o seletor de nível (Collège/Lycée) está na posição correta para o que procura.
             </p>
-            <Link 
-                to="/catalog"
-                className="px-8 py-4 bg-blue-900 text-white font-bold text-sm tracking-widest uppercase rounded-xl hover:bg-black transition-all shadow-md"
-            >
-                Explorar Catálogo Completo
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button 
+                  onClick={() => setLocalQuery('')}
+                  className="px-10 py-4 bg-white border-2 border-notebook-lines text-blue-900 font-black text-xs tracking-widest uppercase rounded-2xl hover:bg-notebook-beige transition-all active:scale-95 shadow-sm"
+              >
+                  Limpar Pesquisa
+              </button>
+              <Link 
+                  to="/catalog"
+                  className="px-10 py-4 bg-blue-900 text-white font-black text-xs tracking-widest uppercase rounded-2xl hover:bg-black transition-all shadow-xl active:scale-95"
+              >
+                  Abrir Catálogo Completo
+              </Link>
+            </div>
         </div>
       )}
     </div>
