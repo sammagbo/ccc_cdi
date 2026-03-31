@@ -1,13 +1,13 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, BookMarked, CheckCircle, XCircle, FileText, Download, MapPin, SearchX } from 'lucide-react'
-import { catalogData } from '../services/catalogData'
+import { useAppStore } from '../store/useAppStore'
 
 export default function BookDetails() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
 
   // Find book
-  const book = catalogData.find(b => b.id === id)
+  const book = useAppStore(state => state.books).find(b => b.id === id)
 
   if (!book) {
     return (

@@ -1,4 +1,4 @@
-import { HashRouter as Router, Routes, Route } from 'react-router-dom'
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Home from './pages/Home'
 import Quiz from './pages/Quiz'
 import Catalog from './pages/Catalog'
@@ -7,6 +7,10 @@ import EducationRead from './pages/EducationRead'
 import EducationInform from './pages/EducationInform'
 import Jouer from './pages/Jouer'
 import AppLayout from './components/layout/AppLayout'
+import Librarian from './pages/Librarian'
+import Contact from './pages/Contact'
+import AdminLayout from './components/admin/AdminLayout'
+import CatalogManager from './pages/admin/CatalogManager'
 
 function App() {
   return (
@@ -29,7 +33,17 @@ function App() {
           {/* Rotas Educacionais */}
           <Route path="education/read" element={<EducationRead />} />
           <Route path="education/inform" element={<EducationInform />} />
-          {/* <Route path="librarian" element={<Librarian />} /> */}
+          <Route path="librarian" element={<Librarian />} />
+          <Route path="contact" element={<Contact />} />
+        </Route>
+
+        {/* Roteamento de Admin (Isolado) */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Navigate to="catalog" replace />} />
+          <Route path="catalog" element={<CatalogManager />} />
+          {/* Placeholders for future modules */}
+          <Route path="media" element={<div className="p-12"><h2 className="text-2xl font-bold">Gestão Multimédia em breve...</h2></div>} />
+          <Route path="quizzes" element={<div className="p-12"><h2 className="text-2xl font-bold">Gestão de Quizzes em breve...</h2></div>} />
         </Route>
       </Routes>
     </Router>

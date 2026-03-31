@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react'
 import { Filter, Search, BookDashed, ChevronDown } from 'lucide-react'
-import { catalogData, categories, BookLevel } from '../services/catalogData'
+import { categories, BookLevel } from '../services/catalogData'
 import BookCard from '../components/catalog/BookCard'
 import { useAppStore } from '../store/useAppStore'
 
 export default function Catalog() {
   const globalLevel = useAppStore(state => state.level)
+  const books = useAppStore(state => state.books)
 
   // Estados dos Filtros
   const [searchQuery, setSearchQuery] = useState('')
@@ -24,7 +25,7 @@ export default function Catalog() {
 
   // Lógica de Filtragem Dinâmica
   const filteredBooks = useMemo(() => {
-    return catalogData.filter(book => {
+    return books.filter(book => {
       // 1. Pesquisa por Título ou Autor
       const matchesSearch = 
         book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
